@@ -9,11 +9,14 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-image: url('https://images.pexels.com/photos/7948002/pexels-photo-7948002.jpeg'); /* Set your background image here */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
         }
 
         header {
-            background-color: #333;
+            background-color: rgba(51, 51, 51, 0.7); /* Added transparency to header */
             color: white;
             padding: 15px 20px;
             display: flex;
@@ -42,6 +45,9 @@
 
         .container {
             padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9); /* Light background for content */
+            border-radius: 8px;
+            margin-top: 20px;
         }
 
         .section-title {
@@ -49,6 +55,20 @@
             font-size: 28px;
             color: #333;
             text-align: center;
+        }
+
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            max-width: 500px;
         }
 
         .templates-container {
@@ -176,37 +196,42 @@
         <section id="subjects">
             <h2 class="section-title">Choose a Subject</h2>
 
+            <!-- Search Bar Section -->
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search Templates..." onkeyup="searchTemplates()">
+            </div>
+
             <div id="templates-container">
                 <div class="templates-container" id="math-templates">
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Algebra+Cheat+Sheet" alt="Algebra Template">
                         <h3>Algebra Guide</h3>
                         <p>Price: $5</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(5)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Trigonometry+Formulas" alt="Trigonometry Template">
                         <h3>Trigonometry Formulas</h3>
                         <p>Price: $6</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(6)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Calculus+Notes" alt="Calculus Template">
                         <h3>Calculus Notes</h3>
                         <p>Price: $7</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(7)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Geometry+Formula+Sheet" alt="Geometry Template">
                         <h3>Geometry Formula Sheet</h3>
                         <p>Price: $6</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(6)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Statistics+Guide" alt="Statistics Template">
                         <h3>Statistics Guide</h3>
                         <p>Price: $5</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(5)">Add to Cart</button>
                     </div>
                 </div>
 
@@ -215,25 +240,25 @@
                         <img src="https://via.placeholder.com/200?text=Physics+Formula+Sheet" alt="Physics Template">
                         <h3>Physics Guide</h3>
                         <p>Price: $8</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(8)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Biology+Mind+Map" alt="Biology Template">
                         <h3>Biology Mind Map</h3>
                         <p>Price: $7</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(7)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Chemistry+Guide" alt="Chemistry Template">
                         <h3>Chemistry Guide</h3>
                         <p>Price: $9</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(9)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=Environmental+Science" alt="Environmental Science Template">
                         <h3>Environmental Science</h3>
                         <p>Price: $7</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(7)">Add to Cart</button>
                     </div>
                 </div>
 
@@ -242,19 +267,19 @@
                         <img src="https://via.placeholder.com/200?text=History+Timeline" alt="History Template">
                         <h3>History Timeline</h3>
                         <p>Price: $9</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(9)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=World+War+Summaries" alt="World War Template">
                         <h3>World War Summaries</h3>
                         <p>Price: $5</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(5)">Add to Cart</button>
                     </div>
                     <div class="template">
                         <img src="https://via.placeholder.com/200?text=American+Revolution+Notes" alt="American Revolution Template">
                         <h3>American Revolution Notes</h3>
                         <p>Price: $6</p>
-                        <button>Add to Cart</button>
+                        <button onclick="addToCart(6)">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -297,6 +322,20 @@
             } else if (subject === 'history') {
                 document.getElementById('history-templates').style.display = 'grid';
             }
+        }
+
+        function searchTemplates() {
+            let input = document.getElementById('search-input').value.toLowerCase();
+            let templates = document.querySelectorAll('.template');
+
+            templates.forEach(template => {
+                let title = template.querySelector('h3').textContent.toLowerCase();
+                if (title.indexOf(input) > -1) {
+                    template.style.display = '';
+                } else {
+                    template.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>
