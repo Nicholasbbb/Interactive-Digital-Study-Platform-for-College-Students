@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5;
+        }
+        header {
+            background-color: #333; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        header nav a {
+            color: white; text-decoration: none; margin: 0 15px; font-size: 18px; transition: background-color 0.3s ease;
+        }
+        header nav a:hover {
+            background-color: #555; padding: 5px 10px; border-radius: 5px;
+        }
+        .container {
+            max-width: 600px; margin: 50px auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .container h2 { margin-bottom: 20px; }
+        .payment-buttons {
+            display: flex; flex-direction: column; gap: 20px; align-items: center;
+        }
+
+        /* PayPal Official Button (Using Checkout Logo) */
+        .paypal-button {
+            background: none; border: none; padding: 0; cursor: pointer;
+        }
+        .paypal-button img {
+            width: 200px;
+        }
+
+        /* Apple Pay Official Style Button */
+        #apple-pay-button {
+            -webkit-appearance: -apple-pay-button;
+            -apple-pay-button-type: buy;
+            -apple-pay-button-style: black;
+            width: 200px; height: 40px; border: none; cursor: pointer;
+        }
+
+        /* Credit Card Button */
+        .credit-card-button {
+            background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; padding: 10px 20px; 
+            cursor: pointer; width: 200px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .credit-card-button:hover {
+            background: #e9e9e9;
+        }
+        .credit-card-button img { vertical-align: middle; height: 20px; }
+
+        .back-button {
+            margin-top: 20px; background: #333; color: white; border: none; padding: 10px 15px; border-radius: 4px; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block;
+        }
+        .back-button:hover {
+            background: #555;
+        }
+        p { font-size: 18px; }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,.5); display: flex; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #fff; padding: 20px; border-radius: 8px; width: 300px; text-align: left;
+        }
+        .modal-content h3 {
+            margin-top: 0;
+        }
+        .modal-content label {
+            display: block; margin: 10px 0 5px;
+        }
+        .modal-content input {
+            width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;
+        }
+        .modal-buttons {
+            margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;
+        }
+        .modal-buttons button {
+            padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer;
+        }
+        .modal-buttons .cancel {
+            background: #ccc; color: #333;
+        }
+        .modal-buttons .confirm {
+            background: #4CAF50; color: white;
+        }
+        .modal-buttons .confirm:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Checkout</h1>
+        <nav>
+            <a href="index.html">Home</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Complete Your Purchase</h2>
+        <p>Total: $<span id="total"></span></p>
+        <div class="payment-buttons">
+            <button class="paypal-button" onclick="simulateCheckout('PayPal')">
+                <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/checkout-logo-large.png" alt="Pay with PayPal">
+            </button>
+
+            <button id="apple-pay-button" onclick="simulateCheckout('Apple Pay')"></button>
+
+            <button class="credit-card-button" onclick="openCreditCardModal()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Visa_2021.svg/50px-Visa_2021.svg.png" alt="Visa">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/50px-Mastercard-logo.svg.png" alt="MasterCard">
+                <span>Pay with Card</span>
+            </button>
+        </div>
+        <a href="index.html" class="back-button">Go Back to Cart</a>
+    </div>
+
+    <!-- Credit Card Modal -->
+    <div id="credit-card-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h3>Enter Credit Card Information</h3>
+            <label for="card-name">Name on Card</label>
+            <input type="text" id="card-name" placeholder="John Doe">
+
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456">
+
+            <label for="card-expiry">Expiry (MM/YY)</label>
+            <input type="text" id="card-expiry" placeholder="12/25">
+
+            <label for="card-cvv">CVV</label>
+            <input type="text" id="card-cvv" placeholder="123">
+
+            <div class="modal-buttons">
+                <button class="cancel" onclick="closeCreditCardModal()">Cancel</button>
+                <button class="confirm" onclick="confirmCreditCardPurchase()">Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const total = params.get('total');
+        document.getElementById('total').textContent = total || "0.00";
+
+        function simulateCheckout(method) {
+            const amount = total || "0.00";
+            alert(`You have checked out using ${method} for a total of $${amount}. (Simulated - no payment processed)`);
+        }
+
+        function openCreditCardModal() {
+            document.getElementById('credit-card-modal').style.display = 'flex';
+        }
+
+        function closeCreditCardModal() {
+            document.getElementById('credit-card-modal').style.display = 'none';
+        }
+
+        function confirmCreditCardPurchase() {
+            const amount = total || "0.00";
+            // We won't validate card details since this is simulated
+            closeCreditCardModal();
+            alert(`Your purchase of $${amount} was successful! (Simulated - no payment processed)`);
+        }
+    </script>
+</body>
+</html>
